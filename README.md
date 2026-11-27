@@ -23,6 +23,11 @@ This repository intentionally contains a small production codebase with imperfec
 - Add your own tests under `src/test/java`.
 - Keep evidence needed for the final video/report in the repository.
 
+
+
+
+
+
 ## Testing Strategy (Pricing Section)
 
 
@@ -97,35 +102,47 @@ Decision tables test the combinations of blocks that depend on each other. We ha
 ## BCC Test table
 
 
-| Test | items                 | tier     | coupon | province | orderDate  | Expected (merch, shipping, tax, total) |
-|------|-----------------------|----------|--------|----------|------------|----------------------------------------|
-| T1   | $20.00 X 1            | STANDARD | NULL   | ON       | 2026-11-25 | (20.00,8.99,3.77,32.76)                |
-| T2   | $20.00 X 1            | STANDARD | NULL   | **BC**   | 2026-11-25 | (20.00,8.99,3.48,32.47)                |
-| T3   | $20.00 X 1            | STANDARD | NULL   | **AB**   | 2026-11-25 | (20.00,8.99,1.45,30.44)                |
-| T4   | $20.00 X 1            | STANDARD | NULL   | **QC**   | 2026-11-25 | IllegalArgumentException               |
-| T5   | **[]**                | STANDARD | NULL   | ON       | 2026-11-25 | IllegalArgumentException               |
+| Test | items                     | tier     | coupon | province | orderDate  | Expected (merch, shipping, tax, total) |
+|------|---------------------------|----------|--------|----------|------------|----------------------------------------|
+| T1   | $20.00 X 1                | STANDARD | NULL   | ON       | 2026-11-25 | (20.00,8.99,3.77,32.76)                |
+| T2   | $20.00 X 1                | STANDARD | NULL   | **BC**   | 2026-11-25 | (20.00,8.99,3.48,32.47)                |
+| T3   | $20.00 X 1                | STANDARD | NULL   | **AB**   | 2026-11-25 | (20.00,8.99,1.45,30.44)                |
+| T4   | $20.00 X 1                | STANDARD | NULL   | **QC**   | 2026-11-25 | IllegalArgumentException               |
+| T5   | **[]**                    | STANDARD | NULL   | ON       | 2026-11-25 | IllegalArgumentException               |
 | T6   | **$15.00 X 1, $5.00 X 1** | STANDARD | NULL   | ON       | 2026-11-25 | (20.00,8.99,3.77,32.76)                |
 
 Independent blocks are tested with BCC to check that they individually work. We have 6 tests to check. 
 
 ## BVT 
-| Test | Boundary             | Value        | items        | tier     | coupon           | province | orderDate      | Expected (merch, shipping, tax, total) |
-|------|----------------------|--------------|--------------|----------|------------------|----------|----------------|----------------------------------------|
-| B1   | Bulk qty >= 10       | 9            | $5.00 X 9    | STANDARD | NULL             | ON       | 2026-11-15     | (45.00,8.99,7.02,61.01)                |
-| B2   | Bulk qty >= 10       | **10**       | $5.00 X 10   | STANDARD | NULL             | ON       | 2026-11-15     | (47.50,8.99,7.34,63.83)                |
-| B3   | Bulk qty >= 10       | 11           | $5.00 X 11   | STANDARD | NULL             | ON       | 2026-11-15     | (52.25,8.99,7.96,69.20)                |
-| B4   | Coupon min >= $50    | 49.99        | $49.99 X 1   | STANDARD | $10, Nov 1-30    | ON       | 2026-11-15     | (49.99,8.99,7.67,66.65)                |
-| B5   | Coupon min >= $50    | **50.00**    | $50.00 X 1   | STANDARD | $10, Nov 1-30    | ON       | 2026-11-15     | (40.00,8.99,6.37,55.36)                |
-| B6   | Coupon min >= $50    | 50.01        | $50.01 X 1   | STANDARD | $10, Nov 1-30    | ON       | 2026-11-15     | (40.01,8.99,6.37,55.37)                |
-| B7   | Merch not negative   | coupon 59.99 | $60.00 X 1   | STANDARD | $59.99, Nov 1-30 | ON       | 2026-11-15     | (0.01,8.99,1.17,10.17)                 |
-| B8   | Merch not negative   | **coupon 60.00** | $60.00 X 1 | STANDARD | $60.00, Nov 1-30 | ON     | 2026-11-15     | (0.00,8.99,1.17,10.16)                 |
-| B9   | Merch not negative   | coupon 60.01 | $60.00 X 1   | STANDARD | $60.01, Nov 1-30 | ON       | 2026-11-15     | (0.00,8.99,1.17,10.16)                 |
-| B10  | Free shipping >= $100 | 99.99       | $99.99 X 1   | STANDARD | NULL             | ON       | 2026-11-15     | (99.99,8.99,14.17,123.15)              |
-| B11  | Free shipping >= $100 | **100.00**  | $100.00 X 1  | STANDARD | NULL             | ON       | 2026-11-15     | (100.00,0.00,13.00,113.00)             |
-| B12  | Free shipping >= $100 | 100.01      | $100.01 X 1  | STANDARD | NULL             | ON       | 2026-11-15     | (100.01,0.00,13.00,113.01)             |
-| B13  | Coupon start date    | start - 1    | $60.00 X 1   | STANDARD | $10, Nov 1-30    | ON       | **2026-10-31** | (60.00,8.99,8.97,77.96)                |
-| B14  | Coupon start date    | **start**    | $60.00 X 1   | STANDARD | $10, Nov 1-30    | ON       | **2026-11-01** | (50.00,8.99,7.67,66.66)                |
-| B15  | Coupon end date      | **end**      | $60.00 X 1   | STANDARD | $10, Nov 1-30    | ON       | **2026-11-30** | (50.00,8.99,7.67,66.66)                |
-| B16  | Coupon end date      | end + 1      | $60.00 X 1   | STANDARD | $10, Nov 1-30    | ON       | **2026-12-01** | (60.00,8.99,8.97,77.96)                |
+| Test | Boundary              | Value            | items       | tier     | coupon           | province | orderDate      | Expected (merch, shipping, tax, total) |
+|------|-----------------------|------------------|-------------|----------|------------------|----------|----------------|----------------------------------------|
+| B1   | Bulk qty >= 10        | 9                | $5.00 X 9   | STANDARD | NULL             | ON       | 2026-11-15     | (45.00,8.99,7.02,61.01)                |
+| B2   | Bulk qty >= 10        | **10**           | $5.00 X 10  | STANDARD | NULL             | ON       | 2026-11-15     | (47.50,8.99,7.34,63.83)                |
+| B3   | Bulk qty >= 10        | 11               | $5.00 X 11  | STANDARD | NULL             | ON       | 2026-11-15     | (52.25,8.99,7.96,69.20)                |
+| B4   | Coupon min >= $50     | 49.99            | $49.99 X 1  | STANDARD | $10, Nov 1-30    | ON       | 2026-11-15     | (49.99,8.99,7.67,66.65)                |
+| B5   | Coupon min >= $50     | **50.00**        | $50.00 X 1  | STANDARD | $10, Nov 1-30    | ON       | 2026-11-15     | (40.00,8.99,6.37,55.36)                |
+| B6   | Coupon min >= $50     | 50.01            | $50.01 X 1  | STANDARD | $10, Nov 1-30    | ON       | 2026-11-15     | (40.01,8.99,6.37,55.37)                |
+| B7   | Merch not negative    | coupon 59.99     | $60.00 X 1  | STANDARD | $59.99, Nov 1-30 | ON       | 2026-11-15     | (0.01,8.99,1.17,10.17)                 |
+| B8   | Merch not negative    | **coupon 60.00** | $60.00 X 1  | STANDARD | $60.00, Nov 1-30 | ON       | 2026-11-15     | (0.00,8.99,1.17,10.16)                 |
+| B9   | Merch not negative    | coupon 60.01     | $60.00 X 1  | STANDARD | $60.01, Nov 1-30 | ON       | 2026-11-15     | (0.00,8.99,1.17,10.16)                 |
+| B10  | Free shipping >= $100 | 99.99            | $99.99 X 1  | STANDARD | NULL             | ON       | 2026-11-15     | (99.99,8.99,14.17,123.15)              |
+| B11  | Free shipping >= $100 | **100.00**       | $100.00 X 1 | STANDARD | NULL             | ON       | 2026-11-15     | (100.00,0.00,13.00,113.00)             |
+| B12  | Free shipping >= $100 | 100.01           | $100.01 X 1 | STANDARD | NULL             | ON       | 2026-11-15     | (100.01,0.00,13.00,113.01)             |
+| B13  | Coupon start date     | start - 1        | $60.00 X 1  | STANDARD | $10, Nov 1-30    | ON       | **2026-10-31** | (60.00,8.99,8.97,77.96)                |
+| B14  | Coupon start date     | **start**        | $60.00 X 1  | STANDARD | $10, Nov 1-30    | ON       | **2026-11-01** | (50.00,8.99,7.67,66.66)                |
+| B15  | Coupon end date       | **end**          | $60.00 X 1  | STANDARD | $10, Nov 1-30    | ON       | **2026-11-30** | (50.00,8.99,7.67,66.66)                |
+| B16  | Coupon end date       | end + 1          | $60.00 X 1  | STANDARD | $10, Nov 1-30    | ON       | **2026-12-01** | (60.00,8.99,8.97,77.96)                |
 
 BVT checks around boundaries. We have 16 tests to check.
+
+
+## Use these commands
+- `mvn test`
+
+To run only the pricing tests:
+- `mvn test -Dtest=PricingServiceTest`
+
+To run only one of the three test groups (decision table, BCC or BVT) add the method name:
+- `mvn test -Dtest=PricingServiceTest#boundary`
+
+Use decisionTableRule or bccProvince instead of boundary for the other two
